@@ -1,34 +1,37 @@
 #include <iostream>
-#include "RentalStrategy.h"
+#include "RentalSystem.h"
 
 int main()
 {
-    RentalService rentalService;
-    CarRental petrolCar(false);
-    CarRental electricCar(true);
-    HouseRental houseRental;
+    int days = 5;
+    int carBasePrice = 20;
+    int houseBasePrice = 100;
+    double price;
+    RentalService rentalService("Test rental", days);
+    try{
 
-    try
-    {
-        rentalService.executeRental(5);
-        std::cout << std::endl;
+    rentalService.setRentalStrategy(std::make_shared<RentalPricer>(0, "Base Rental"));
+    price = rentalService.executeRental(days,10);
+    std::cout << "Details of " << rentalService.toString() << std::endl;
+    std::cout << "Base rental price: " << price << std::endl;
+    
 
-        rentalService.setRentalPricer(&petrolCar); // Polimorfizmas
-        rentalService.executeRental(5);
-        std::cout << std::endl;
+    //Polimorfizmas
+    rentalService.setRentalStrategy(std::make_shared<CarRental>(false, 18, true, 20));
+    price = rentalService.executeRental(days, carBasePrice);
+    std::cout<<"\nDetails of " << rentalService.toString() << std::endl;
+    std::cout << "Car rental price: " << price << std::endl;
+    
 
-        rentalService.setRentalPricer(&electricCar); // Polimorfizmas
-        rentalService.executeRental(5);
-        std::cout << std::endl;
+    //Polimorfizmas
+    rentalService.setRentalStrategy(std::make_shared<HouseRental>(3, 50));
+    price = rentalService.executeRental(days, houseBasePrice);
+    std::cout<<"\nDetails of " << rentalService.toString() << std::endl;
+    std::cout << "House rental price: " << price << std::endl;
 
-        rentalService.setRentalPricer(&houseRental); // Polimorfizmas
-        rentalService.executeRental(3);
-        std::cout << std::endl;
     }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
     }
-
     return 0;
 }
